@@ -1,0 +1,46 @@
+{
+	"in_process_packages":
+	[
+	],
+	"installed_dependencies":
+	[
+		"0_package_control_loader",
+		"bz2"
+	],
+	"installed_packages":
+	[
+		"All Autocomplete",
+		"Autoprefixer",
+		"Block Cursor Everywhere",
+		"Can I Use",
+		"CanISwitchToSublimeText3",
+		"ConvertToUTF8",
+		"CSS3_Syntax",
+		"CSScomb",
+		"Darkula Color Scheme",
+		"DataConverter",
+		"Emmet",
+		"Emmet Css Snippets",
+		"FileBrowser",
+		"FindKeyConflicts",
+		"Git",
+		"HTML5",
+		"Image2Base64",
+		"Javascript Beautify",
+		"Local History",
+		"LoremIpsum",
+		"Markdown Preview",
+		"Package Control",
+		"Placehold.it Image Tag Generator",
+		"Smart Delete",
+		"SublimeNFDToNFCPaste",
+		"Theme - Flatland",
+		"Theme - Spacegray",
+		"WordHighlight",
+		"YUI Compressor"
+	],
+	"repositories":
+	[
+		"https://github.com/astronaughts/SublimeChatWork"
+	]
+}

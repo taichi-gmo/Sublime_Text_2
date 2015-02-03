@@ -1,0 +1,8 @@
+
+ANNOUNCEMENT: CSS3_Syntax is no longer available for Sublime Text 3 Users.
+My new ST3-only package is called CSS3 and features an improved highlighter with
+a full set of completions. It supports more of the CSS spec and will flag more
+bad code. I will keep CSS3_Syntax around until some time after Sublime Text 3
+is released.
+
+CSS3 on Github: https://github.com/y0ssar1an/CSS3

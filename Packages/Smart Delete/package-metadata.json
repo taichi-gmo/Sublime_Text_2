@@ -1,0 +1,1 @@
+{"description": "Plugin for Sublime Text to smart delete all spaces after carret", "url": "https://github.com/mac2000/sublime-smart-delete", "platforms": ["*"], "version": "2014.06.20.15.19.20", "sublime_text": "*", "dependencies": []}

@@ -1,0 +1,768 @@
+# [PackageDev] target_format: plist, ext: tmLanguage
+---
+name: CSS3
+scopeName: source.css
+fileTypes: [css]
+uuid: 8195f5b1-d6d5-4ceb-b15b-e939b3d3fcdd
+
+patterns:
+- include: '#block-comment'
+- include: '#at-charset'
+- include: '#at-font-face'
+- include: '#at-font-feature-values'
+- include: '#at-import'
+- include: '#at-keyframes'
+- include: '#at-media'
+- include: '#at-namespace'
+- include: '#at-page'
+- include: '#at-supports'
+- include: '#selector'
+- include: '#block'
+
+repository:
+
+  an-plus-b:
+    # name: invalid.deprecated.css
+    # every rule contains the "name: invalid.deprecated.css" line. this scope
+    # name highlights whitespace as well as characters. this is useful for
+    # debugging because it's easy to see exactly what is being matched.
+    name: constant.other.an-plus-b.css
+    match: ([+-]?([0-9]*n[+-][0-9]+b|[0-9]+|n))|even|odd
+
+  attribute-selector:
+    # name: invalid.deprecated.css
+    begin: \[
+    patterns:
+    - include: '#block-comment'
+    - include: '#double-quoted-string'
+    - include: '#single-quoted-string'
+    - include: '#attribute-selector-operator'
+    - include: '#attribute-selector-universal'
+    - include: '#attribute-identifier'
+    end: \]
+
+  attribute-identifier:
+    # name: invalid.deprecated.css
+    # this is identical to the generic #identifier, but is styled differently
+    name: entity.other.attribute-name.css
+    match: -?([a-zA-Z_\p{^ASCII}]|\\([0-9a-fA-F]{1,6}|[^\n]))([-a-zA-Z0-9_\p{^ASCII}]|\\([^\n]|[0-9a-fA-F]{1,6}))*
+
+  attribute-selector-operator:
+    # name: invalid.deprecated.css
+    name: keyword.operator.css
+    match: \||[~^$*|]?=
+
+  attribute-selector-universal:
+    # name: invalid.deprecated.css
+    # special rule for the universal attribute selector (*). distinct from
+    # universal element selector. this pattern will only be matched inside
+    # attribute selector brackets ([]).
+    name: entity.name.tag.css
+    match: \*
+
+  at-charset:
+    # name: invalid.deprecated.css
+    # deviation from spec: must be on one line.
+    match: (@charset)\s+(?i)(\"(unicode-1-1-)?utf-?8\"|\'(unicode-1-1-)?utf-?8\')\s*;
+    captures:
+      '1': {name: keyword.other.at-rule.css}
+      '2': {name: string.quoted.css}
+
+  at-font-face:
+    # name: invalid.deprecated.css
+    name: meta.block.css
+    begin: (@font-face)
+    beginCaptures:
+      '0': {name: keyword.other.at-rule.css}
+    contentName: punctuation.css
+    patterns:
+    - include: '#block-comment'
+    - include: '#font-descriptor'
+    - include: '#unicode-range'
+    - include: '#font-descriptor-value'
+    end: \}
+
+  at-font-feature-values:
+    # name: invalid.deprecated.css
+    begin: (@font-feature-values)
+    beginCaptures:
+      '0': {name: keyword.other.at-rule.css}
+    contentName: punctuation.css
+    patterns:
+    - include: '#block-comment'
+    - include: '#font-family-name-list'
+    - include: '#font-feature-block'
+    end: \}
+
+  at-import:
+    # name: invalid.deprecated.css
+    begin: (@import)
+    beginCaptures:
+      '0': {name: keyword.other.at-rule.css}
+    contentName: punctuation.css
+    patterns:
+    - include: '#block-comment'
+    - include: '#url'
+    - include: '#double-quoted-string'
+    - include: '#single-quoted-string'
+    - include: '#deprecated-media-type'
+    - include: '#media-type'
+    - include: '#logic-operator'
+    - include: '#media-feature'
+    end: ;
+
+  at-keyframes:
+    # name: invalid.deprecated.css
+    begin: (@(-(moz|webkit)-)?keyframes)
+    beginCaptures:
+      '0': {name: keyword.other.at-rule.css}
+    contentName: punctuation.css
+    patterns:
+    - include: '#block-comment'
+    - include: '#keyframes-identifier'
+    - include: '#keyframes-selector'
+    - include: '#block'
+    end: \}
+
+  at-media:
+    # name: invalid.deprecated.css
+    begin: (@media)
+    beginCaptures:
+      '0': {name: keyword.other.at-rule.css}
+    contentName: punctuation.css
+    patterns:
+    - include: '#block-comment'
+    - include: $self
+    - include: '#media-condition-list'
+    end: \}
+
+  at-namespace:
+    # name: invalid.deprecated.css
+    begin: (@namespace)
+    beginCaptures:
+      '0': {name: keyword.other.at-rule.css}
+    contentName: punctuation.css
+    patterns:
+    - include: '#block-comment'
+    - include: '#url'
+    - include: '#double-quoted-string'
+    - include: '#single-quoted-string'
+    - include: '#identifier'
+    end: ;
+
+  at-page:
+    # name: invalid.deprecated.css
+    begin: (@page)
+    beginCaptures:
+      '0': {name: keyword.other.at-rule.css}
+    contentName: punctuation.css
+    patterns:
+    - include: '#block-comment'
+    - include: '#at-page-selector'
+    - include: '#page-margin-block'
+    - include: '#property'
+    - include: '#value'
+    end: \}
+
+  at-page-selector:
+    # name: invalid.deprecated.css
+    begin: (?<=@page)
+    patterns:
+    - include: '#block-comment'
+    - include: '#pseudo-page'
+    - include: '#identifier'
+    end: (?=\{)
+
+  at-supports:
+    # name: invalid.deprecated.css
+    begin: (@supports)
+    beginCaptures:
+      '0': {name: keyword.other.at-rule.css}
+    contentName: punctuation.css
+    patterns:
+    - include: '#block-comment'
+    - include: $self
+    - include: '#supports-selector'
+    - include: '#block'
+    end: \}
+
+  block:
+    # name: invalid.deprecated.css
+    name: meta.block.css
+    begin: \{
+    patterns:
+    - include: '#block-comment'
+    - include: '#variable'
+    - include: '#property-epub'
+    - include: '#property-moz'
+    - include: '#property-ms'
+    - include: '#property-wap'
+    - include: '#property-webkit'
+    - include: '#property'
+    - include: '#value'
+    end: \}
+
+  block-comment:
+    # name: invalid.deprecated.css
+    name: comment.block.css
+    begin: '/\*'
+    end: '\*/'
+
+  color-name:
+    # name: invalid.deprecated.css
+    name: constant.other.css
+    match: \b(aliceblue|antiquewhite|aqua(marine)?|azure|beige|bisque|black|blanchedalmond|blue(violet)?|brown|burlywood|cadetblue|chartreuse|chocolate|coral|corn(flowerblue|silk)|crimson|currentColor|dark(blue|cyan|goldenrod|gray|green|grey|khaki|magenta|olivegreen|orange|orchid|red|salmon|seagreen|slateblue|slategray|slategrey|turquoise|violet)|deep(pink|skyblue)|dimgr(a|e)y|dodgerblue|firebrick|floralwhite|forestgreen|fuchsia|gainsboro|ghostwhite|gold(enrod)?|gr(a|e)y|green(yellow)?|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender(blush)?|lawngreen|lemonchiffon|light(blue|coral|cyan|goldenrodyellow|gray|green|grey|pink|salmon|seagreen|skyblue|slategray|slategrey|steelblue|yellow)|lime(green)?|linen|maroon|medium(aquamarine|blue|orchid|purple|seagreen|slateblue|springgreen|turquoise|violetred)|midnightblue|mintcream|mistyrose|moccasin|navajowhite|navy|oldlace|olive(drab)?|orange(red)?|orchid|pale(goldenrod|green|turquoise|violetred)|papayawhip|peachpuff|peru|pink|plum|powderblue|purple|red|rosybrown|royalblue|saddlebrown|salmon|sandybrown|sea(green|shell)|sienna|silver|skyblue|slate(blue|gr(a|e)y)|snow|springgreen|steelblue|tan|teal|thistle|tomato|transparent|turquoise|violet|wheat|white(smoke)?|yellow(green)?)\b
+
+  combinator:
+    # name: invalid.deprecated.css
+    name: keyword.operator.css
+    match: '[>+~]|\|\|?|\/-?([a-zA-Z_\p{^ASCII}]|\\([0-9a-fA-F]{1,6}|[^\n]))([-a-zA-Z0-9_\p{^ASCII}]|\\([^\n]|[0-9a-fA-F]{1,6}))*\/'
+
+  deprecated-html-tag:
+    name: invalid.illegal.css
+    match: \b(applet|acronym|bgsound|dir|frame|frameset|noframes|hgroup|isindex|listing|nextid|noembed|plaintext|strike|xmp|basefont|big|blink|center|font|marquee|multicol|nobr|spacer|tt)\b
+
+  deprecated-media-type:
+    name: invalid.deprecated.css
+    match: \b(aural|braille|embossed|handheld|projection|tty|tv)\b
+
+  deprecated-pseudo-element:
+    name: invalid.deprecated.css
+    match: :(after|before|first-(letter|line))
+
+  double-quoted-string:
+    # name: invalid.deprecated.css
+    name: string.quoted.double.css
+    match: \"([^\n\r\f\\"]|\\(\n|\r\n|\r|\f)|((\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)|\\[^\n\r\f0-9a-f]))*\"
+
+  font-descriptor:
+    # name: invalid.deprecated.css
+    match: (((font-)(family|feature-settings|stretch|style|variant|weight)|src|unicode-range))\s*(?=:)
+    captures:
+      '1': {name: storage.type.css}
+
+  font-descriptor-value:
+    # name: invalid.deprecated.css
+    begin: ':'
+    patterns:
+    - include: '#block-comment'
+    - include: '#url'
+    - include: '#font-function-format'
+    - include: '#font-function'
+    - include: '#double-quoted-string'
+    - include: '#single-quoted-string'
+    - include: '#font-descriptor-named-value'
+    - include: '#unicode-range'
+    - include: '#identifier'
+    end: ;
+
+  font-descriptor-named-value:
+    # name: invalid.deprecated.css
+    # named values for a font descriptor
+    # e.g. normal, italic, historical-forms, bold, 900
+    name: variable.parameter.named-value.css
+    match: \b(normal|italic|oblique|bold|[1-9]00|((ultra|extra|semi)-)?(condensed|expanded)|none|(no-)?(common|discretionary|historical)-ligatures|(no-)?contextual|historical-forms|(all-)?(small|petite)-caps|unicase|titling-caps|(lining|oldstyle|proportional|tabular)-nums|(diagonal|stacked)-fractions|ordinal|slashed-zero|jis(78|83|90|04)|simplified|traditional|(full|proportional)-width|ruby|off|on)\b
+
+  font-family-name-list:
+    # name: invalid.deprecated.css
+    begin: (?<=@font-feature-values)
+    patterns:
+    - include: '#block-comment'
+    - include: '#double-quoted-string'
+    - include: '#single-quoted-string'
+    - include: '#identifier'
+    end: (?=\{)
+
+  font-feature-block:
+    # name: invalid.deprecated.css
+    name: meta.block.css
+    begin: (@(annotation|character-variant|ornaments|styl(eset|istic)|swash))
+    beginCaptures:
+      '0': {name: keyword.at-rule.css}
+    patterns:
+    - include: '#block-comment'
+    - include: '#font-feature-property'
+    - include: '#number'
+    end: \}
+
+  font-feature-property:
+    # name: invalid.deprecated.css
+    # custom identifiers associated with fonts that specify font variations
+    # e.g. @swash { delicate: 1; flowing: 2}
+    # note that this is the regex for an identifier, followed by a colon
+    match: '(-?([a-zA-Z_\p{^ASCII}]|\\([0-9a-fA-F]{1,6}|[^\n]))([-a-zA-Z0-9_\p{^ASCII}]|\\([^\n]|[0-9a-fA-F]{1,6}))*)\s*:'
+    captures:
+      '1': {name: support.type.css}
+
+  font-function:
+    # name: invalid.deprecated.css
+    # deviation from spec: no space permitted between the function name and
+    # the opening paren
+    match: ((annotation|character-variant|local|ornaments|styl(eset|istic)|swash))\(
+    captures:
+      '1': {name: entity.name.function.css}
+
+  font-function-format:
+    # name: invalid.deprecated.css
+    # special rule for function() that enumerates all possible valid arguments
+    match: (format)\(\s*(\"(woff|(true|(embedded-)?open)type|svg)\"|\'(woff|(true|(embedded-)?open)type|svg)\')\s*\)
+    captures:
+      '1': {name: entity.name.function.css}
+      '2': {name: string.quoted.css}
+
+  function:
+    # name: invalid.deprecated.css
+    # deviation from spec: no space permitted between function name and opening
+    # paren
+    name: entity.name.function.css
+    match: (-(epub|moz|ms|wap|webkit)-)?((attr|blur|brightness|calc|contrast|counters?|cross-fade|cubic-bezier|cycle|drop-shadow|element|grayscale|hsla?|hue-rotate|image|image-rect|invert|linear-gradient|matrix(3d)?|opacity|perspective|radial-gradient|rect|repeating-(linear|radial)-gradient|rgba?|(rotate|scale|translate)(x|y|z|3d)?|saturate|sepia|skew(x|y)?|steps|var))(?=\()
+
+  hex-color:
+    # name: invalid.deprecate.css
+    name: constant.other.css
+    match: '#(\b[0-9a-fA-F]{6}\b|\b[0-9a-fA-F]{3}\b)'
+
+  html-class:
+    # name: invalid.deprecate.css
+    # this the regex for an identifier with a leading .
+    # name: entity.name.function.css
+    name: entity.name.class.css
+    match: '\.-?([a-zA-Z_\p{^ASCII}]|\\([0-9a-fA-F]{1,6}|[^\n]))([-a-zA-Z0-9_\p{^ASCII}]|\\([^\n]|[0-9a-fA-F]{1,6}))*'
+
+  html-id:
+    # name: invalid.deprecate.css
+    # this is the regex for an identifier with a leading #
+    name: entity.name.class.css
+    match: '#-?([a-zA-Z_\p{^ASCII}]|\\([0-9a-fA-F]{1,6}|[^\n]))([-a-zA-Z0-9_\p{^ASCII}]|\\([^\n]|[0-9a-fA-F]{1,6}))*'
+
+  html-tag:
+    # name: invalid.deprecate.css
+    name: entity.name.tag.css
+    match: \*|\b(abbr|address|area|article|aside|audio|a|base|bdi|bdo|blockquote|body|br|button|b|canvas|caption|cite|code|col(group)?|data(list)?|dd|del|details|dfn|dialog|div|dl|dt|em(bed)?|fieldset|figcaption|figure|footer|form|h[1-6]|head(er)?|hr|html|i(frame)?|img|input|ins|kbd|keygen|label|legend|li(nk)?|main|map|mark|math|menu(item)?|meta|meter|nav|noscript|object|ol|optgroup|option|output|param|pre|progress|p|q|rb|rp|rtc?|ruby|samp|script|section|select|small|source|span|strong|style|sub|summary|sup|svg|s|table|tbody|td|template|textarea|tfoot|th(ead)?|time|title|tr(ack)?|ul?|var|video|wbr)\b
+
+  identifier:
+    # name: invalid.deprecate.css
+    name: meta.identifier.css
+    match: -?([a-zA-Z_\p{^ASCII}]|\\([0-9a-fA-F]{1,6}|[^\n]))([-a-zA-Z0-9_\p{^ASCII}]|\\([^\n]|[0-9a-fA-F]{1,6}))*
+
+  important:
+    # name: invalid.deprecate.css
+    name: keyword.other.css
+    match: '!important'
+
+  keyframes-identifier:
+    # name: invalid.deprecated.css
+    # identical to the generic identifier, except that it ends in an opening
+    # curly brace {
+    begin: (?<=[@-]keyframes)
+    patterns:
+    - include: '#block-comment'
+    - include: '#identifier'
+    end: \{
+
+  keyframes-selector:
+    # name: invalid.deprecated.css
+    # deviation from spec: percentage selectors are limited to integers between 0 and 100
+    begin: (\b(from|to)\b|([0-9]|[1-9][0-9]|100)%)
+    beginCaptures:
+      '0': {name: entity.name.function.css}
+    patterns:
+    - include: '#block-comment'
+    - include: '#keyframes-selector'
+    end: (?=\{)
+
+  media-condition-list:
+    # name: invalid.deprecated.css
+    begin: (?<=@media)
+    patterns:
+    - include: '#block-comment'
+    - include: '#deprecated-media-type'
+    - include: '#media-type'
+    - include: '#logic-operator'
+    - include: '#media-feature'
+    end: \{
+
+  media-feature:
+    # name: invalid.deprecated.css
+    begin: \(
+    patterns:
+    - include: '#block-comment'
+    - include: '#media-feature-named-value'
+    - include: '#media-feature-property-moz'
+    - include: '#media-feature-property-ms'
+    - include: '#media-feature-property'
+    - include: '#unit'
+    - include: '#ratio'
+    - include: '#number'
+    - include: '#operator'
+    end: \)
+
+  media-feature-named-value:
+    # name: invalid.deprecated.css
+    match: :\s*((0|1|coarse|dim|enabled|fine|initial-only|interlace|landscape|none|normal|on-demand|optional-paged|over|paged|portrait|progressive|scroll|slow|washed))\b
+    captures:
+      '1': {name: variable.parameter.css}
+
+  media-feature-property:
+    # name: invalid.deprecated.css
+    name: support.type.css
+    match: \b((min|max)-)?((device-)?(aspect-ratio|height|width)|color(-index)?|grid|hover|light-level|resolution|monochrome|orientation|overflow-(block|inline)|pointer|resolution|scan|scripting|update-frequency)\b
+
+  media-feature-property-moz:
+    # name: invalid.deprecated.css
+    name: support.type.css
+    match: -moz-(images-in-menus|mac-graphite-theme|maemo-classic|device-pixel-ratio|scrollbar-((end|start)-(backward|forward)|thumb-proportional)|touch-enabled|windows-(classic|compositor|(default-)?theme))\b
+
+  media-feature-property-ms:
+    # name: invalid.deprecated.css
+    name: support.type.css
+    match: -ms-high-contrast\b
+
+  logic-operator:
+    # name: invalid.deprecated.css
+    match: \s((and|not|only|or))\s
+    captures:
+      '1': {name: keyword.operator.css}
+
+  media-type:
+    # name: invalid.deprecated.css
+    name: variable.parameter.css
+    match: all|print|screen|speech
+
+  named-value:
+    # name: invalid.deprecated.css
+    name: variable.parameter.css
+    match: (absolute|active|alias|all(-scroll)?|alpha|alternate(-reverse)?|always|armenian|auto|available|avoid(-(column|page|region))?|backwards|balance|baseline|bidi-override|block|bold(er)?|border-box|both|bottom|break-(all|word)|bt-(lr|rl)|button(-(arrow-(down|next|previous|up)|bevel))?|capitalize|caption|cell|center|checkbox(-(container|label))?|checkmenuitem|circle|clip|close-quote|col-resize|collapse|color(-(burn|dodge))?|column(-reverse)?|complex|condensed|contain|content(-box)?|context-menu|copy|cover|crisp-edges|crop|cross(hair)?|cursive|darken|dashed|decimal(-leading-zero)?|default|dialog|difference|disabled|disc|dotted|double|e-resize|each-line|ease(-(in(-out)?|out))?|ellipsis|embed|end|ew-resize|exclusion|expanded|extra-(condensed|expanded)|fantasy|fill(-available)?|fit-content|fixed|flat|flex(-(end|start))?|flexbox|flip|forwards|from-image|full-width|geometricPrecision|georgian|grab(bing)?|grid|groove|(group|list)box|hanging|hard-light|help|hidden|hide|horizontal(-tb)?|hue|icon|inactive|infinite|inherit|initial|inline(-(block|flex|grid|table))?|inset|inside|invert|isolate(-override)?|italic|justify|keep-all|larger?|left|lighte(n|r)|line-through|linear|list-item|local|lower-(alpha|greek|latin|roman)|lowercase|lr(-(bt|tb))?|ltr|lumin(ance|osity)|manual|match-parent|max-content|medium|menu(arrow|checkbox|image|item(text)?|list(-(button|text(field)?))?|popup|radio|separator)?|message-box|middle|min-content|monospace|move|multiply|n(esw|e)?-resize|no-(close-quote|drop|open-quote|repeat)|none|normal|not-allowed|nowrap|n(wse|s|w)-resize|oblique|open-quote|optimizeLegibility|optimizeSpeed|outs(et|ide)|overl(ay|ine)|padding-box|page|painted|paused|pixelated|plaintext|pointer|pre(-(line|wrap))?|preserve(-3d)?|progress(bar|chunk)?|radio(-(container|label))?|radiomenuitem|recto|region|relative|repeat(-(x|y))?|resizer(panel)?|reverse|ridge|right|rl(-(bt|tb))?|round|row(-(resize|reverse))?|rtl|run(-in|ning)|s-resize|sans-serif|saturation|scale(thumb)?-(horizontal|vertical)|screen|scrollbar(button-(down|left|right|up)|-small|(thumb|track)-(horizontal|vertical))|scroll|se-resize|semi-(condensed|expanded)|separat(e|or)|serif|show|small(er|-(caps|caption))?|soft-light|solid|space(-(around|between))?|spinner(-((down|up)button|textfield))?|square|start|static|statusbar(panel)?|status-bar|step-(end|start)|sticky|stretch|stroke|sub|super|sw-resize|tab-scroll-arrow-(back|forward)|tab(panels)?|table(-(caption|cell|(column|row)(-group)?|(header|footer)-group))?|tb(-(lr|rl))?|text(-(bottom|top))?|textfield(-multiline)?|thick|thin|tool(bar(button-dropdown)?|box|tip)|top|treeheader(cell|sortarrow)|tree(item|twisty(open)?|view)|ultra-(condensed|expanded)|under(line)?|unset|upper-(alpha|latin|roman)|uppercase|verso|vertical(-(lr|rl|text))?|visible(Fill|Painted|Stroke)?|w-resize|wait|wavy|window|wrap(-reverse)?|x-(large|small)|xx-(large|small)|zoom-(in|out))\b
+
+  named-value-moz:
+    # name: invalid.deprecated.css
+    name: variable.parameter.css
+    match: -moz-(all|anchor-decoration|arabic-indic|available|bengali|box|button(default|hover(face|text))?|cellhighlight(text)?|center|cjk-(earthly-branch|heavenly-stem)|crisp-edges|deck|default(-background)?-color|desktop|devanagari|dialog(text)?|document|dragtargetzone|ethiopic-(halehame(-(am|ti-e(r|t)))?|numeric)|field(text)?|fit-content|fixed|grid(-(group|line))?|groupbox|gujarati|gurmukhi|hangul(-consonant)?|hidden-unscrollable|info|initial|inline-(box|grid|stack)|japanese-(formal|informal)|kannada|khmer|lao|left|list|mac-(accent(dark(est)?shadow|face|light(esthighlight|shadow)|regular(highlight|shadow))|chrome-(in)?active|focusring|menu((text)?select|shadow)|unified-toolbar)|malayalam|marker|(max|min)-content|menuhover(text)?|myanmar|none|oriya|persian|popup|pull-down-menu|right|show-background|simp-chinese-(in)?formal|stack|tamil|telugu|thai|trad-chinese-(in)?formal|urdu|(active|native|visited)?hyperlinktext|win-(borderless-glass|browsertabbar-toolbox|(communications|media)(-toolbox|text)|glass)|window(-(button-(box(-maximized)?|close|(max|min)imize|restore)|titlebar(-maximized)?))?|window|workspace)\b
+
+  named-value-moz-deprecated:
+    # name: invalid.deprecated.css
+    name: invalid.deprecated.css
+    match: -moz-(use-text-color|bg-(inset|outset|solid)|inline-(block|table)|scrollbars-(none|horizontal|vertical))\b
+
+  number:
+    # name: invalid.deprecated.css
+    name: constant.numeric.css
+    match: '[-+]?([0-9]+|[0-9]*\.[0-9]+)([eE][-+]?[0-9]+)?'
+
+  operator:
+    # name: invalid.deprecated.css
+    name: keyword.operator.css
+    match: (?<=\s)([-+<>=*/]|<=|>=)(?=\s)
+
+  page-margin-block:
+    # name: invalid.deprecated.css
+    begin: (@((top|bottom)-((left|right)(-corner)?|center)|(left|right)-(top|middle|bottom)))
+    beginCaptures:
+      '1': {name: keyword.at-rule.css}
+    patterns:
+    - include: '#block-comment'
+    - include: '#block'
+    end: (?<=\})
+
+  property:
+    # name: invalid.deprecated.css
+    name: storage.type.css
+    # from http://meiert.com/en/indices/css-properties/
+    match: (align-(content|items|self)|alignment-(adjust|baseline)|all|anchor-point|animation(-(delay|direction|duration|fill-mode|iteration-count|name|play-state|timing-function))?|appearance|azimuth|backface-visibility|background(-(attachment|clip|color|image|origin|position|repeat|size))?|baseline-shift|binding|bleed|bookmark-(label|level|state|target)|border(-((bottom|top)(-(color|(left|right)-radius|style|width))?|collapse|color|image(-(outset|repeat|slice|source|width))?|(left|right)(-(color|style|width))?|radius|spacing|style|width))?|bottom|box-(decoration-break|shadow|sizing)|break-(after|before|inside)|caption-side|chains|clear|clip(-(path|rule))?|color(-(interpolation-filters|profile))?|column-(count|fill|gap|rule(-(color|style|width))?|span|width)|columns|contain|content|counter-(increment|reset)|crop|cue(-(after|before))?|cursor|direction|display|dominant-baseline|drop-initial-((after|before)-(adjust|align)|size|value)|elevation|empty-cells|filter|flex(-(basis|direction|flow|grow|shrink|wrap))?|float(-offset)?|flood-(color|opacity)|flow-(from|into)|font(-(family|feature-settings|kerning|language-override|size(-adjust)?|stretch|style|synthesis|variant(-(alternates|caps|east-asian|ligatures|numeric|position))?|weight))?|grid(-(area|auto-(columns|flow|position|rows)|(column|row)(-(end|start))?|template(-(areas|columns|rows))?))?|hanging-punctuation|height|hyphens|icon|image-(orientation|resolution)|ime-mode|inline-box-align|justify-(content|items|self)|left|letter-spacing|lighting-color|line-(break|height|stacking(-(ruby|shift|strategy))?)|list-style(-(image|position|type))?|margin(-(bottom|left|right|top))?|marks|mask(-(box(-(outset|repeat|slice|source|width))?|clip|image|origin|position|repeat|size|source-type|type))?|max-(height|lines|width)|min-(height|width)|move-to|nav-(down|index|left|right|up)|object-(fit|position)|opacity|order|orphans|outline(-(color|offset|style|width))?|overflow(-(wrap|x|y))?|padding(-(bottom|left|right|top))?|page(-(break-(after|before|inside)|policy))?|pause(-(after|before))?|perspective(-origin)?|pitch(-range)?|play-during|position|presentation-level|quotes|region-fragment|rendering-intent|resize|rest(-(after|before))?|richness|right|rotation(-point)?|ruby-(align|overhang|position|span)|shape-(image-threshold|outside|margin)|size|speak(-(as|header|numeral|punctuation))?|speech-rate|stress|string-set|tab-size|table-layout|target(-(name|new|position))?|text-(align(-last)?|combine-horizontal|decoration(-(color|line|skip|style))?|emphasis(-(color|position|style))?|height|indent|justify|orientation|outline|overflow|shadow|space-collapse|transform|underline-position|wrap)|top|transform(-(origin|style))?|transition(-(delay|duration|property|timing-function))?|unicode-bidi|vertical-align|visibility|voice-(balance|duration|family|pitch|range|rate|stress|volume)|volume|white-space|widows|width|word-(break|spacing|wrap)|wrap-(flow|through)|writing-mode|z-index)\s*(?=:)
+
+  property-epub:
+    # name: invalid.deprecated.css
+    name: storage.type.css
+    match: -epub-(break-(after|before|inside)|caption-side|columms|column-(count|fill|gap|rule(-(color|style|width))?|width)|cue(-(after|before))?|hyphens|line-break|pause(-(after|before))?|rest(-(after|before))?|ruby-position|speak(-as)?|text-(align-last|combine|emphasis(-(color|style))?|orientation|transform|trim)|voice-(balance|duration|family|pitch|range|rate|stress|volume)|word-break|writing-mode)\s*(?=:)
+
+  property-moz:
+    # name: invalid.deprecated.css
+    name: storage.type.css
+    match: -moz-(animation(-(delay|direction|duration|fill-mode|iteration-count|name|play-state|timing-function))?|appearance|backface-visibility|background-(clip|inline-policy|origin|size)|binding|border-((bottom|left|right|top)-colors|(end|start)(-(color|style|width))?|image)|box-(align|direction|flex|ordinal-group|orient|pack|sizing)|column-(count|fill|gap|rule|rule-color|rule-style|rule-width|width)|float-edge|font-(feature-settings|language-override)|force-broken-image-icon|hyphens|image-region|margin-(end|start)|opacity|orient|outline(-(color|offset|radius(-(bottom|top)(left|right))?|style|width))?|padding-(end|start)|perspective(-origin)?|script-(level|min-size|size-multiplier)|stack-sizing|text-(align-last|decoration-(color|line|style))|transform(-(origin|style))?|transition(-(delay|duration|property|timing-function))?|user-(focus|input|modify|select)|window-shadow)
+
+  property-ms:
+    # name: invalid.deprecated.css
+    name: storage.type.css
+    match: -ms-(accelerator|background-position-(x|y)|behavior|block-progression|content-zoom(-(chaining|limit(-(max|min))?|snap(-(points|type))?)|ing)|filter|flow-(from|into)|grid-(columns?|rows?)(-(align|span))?|high-contrast-adjust|hyphenate-limit-(chars|lines|zone)|hyphens|ime-mode|interpolation-mode|layout-(flow|grid(-(char|line|mode|type))?)|overflow-(style|x|y)|progress-appearance|scroll-(chaining|limit(-((x|y)-(max|min)))?|rails|snap-(points-(x|y)|type|(x|y))|translation)|scrollbar-(3dlight|darkshadow|highlight|shadow|track)-color|text-(align-last|autospace|combine-horizontal|justify|kashida-space|overflow|underline-position)|user-select|word-wrap|wrap-(flow|margin|through)|writing-mode|zoom)\s*(?=:)
+
+  property-wap:
+    # name: invalid.deprecated.css
+    name: storage.type.css
+    match: -wap-(accesskey|input-(format|required)|marquee(-(dir|loop|speed|style))?)\s*(?=:)
+
+  property-webkit:
+    # name: invalid.deprecated.css
+    name: storage.type.css
+    match: -webkit-(animation(-(delay|direction|duration|fill-mode|iteration-count|name|play-state|timing-function))?|appearance|aspect-ratio|backface-visibility|background-(clip|composite|origin|size)|border-((after|before|end|start)(-(color|style|width))?|(bottom|top)-(left|right)-radius|fit|(horizontal|vertical)-spacing|image|radius)|box-(align|direction|flex(-group)?|lines|ordinal-groups|orient|pack|reflect|shadow|sizing)|column-(axis|break-(after|before|inside)|count|gap|rule(-(color|style|width))?|span|width)|columns|dashboard-region|filter|font-(feature-settings|kerning|size-delta|smoothing|variant-ligatures)|grid-(columns?|rows?)|highlight|hyphenate-(charset|limit-(after|before|lines))|hyphens|line-(align|box-contain|break|clamp|grid|snap)|locale|logical-(height|width)|margin-((after|before|bottom|top)(-collapse)?|collapse|end|start)|marquee(-(direction|increment|repetition|speed|style))?|mask(-(attachment|box-image(-(outset|repeat|slice|source|width))?|clip|composite|image|origin|(position|repeat)(-(x|y))?|size))?|match-nearest-mail-blockquote-color|(max|min)-logical-(height|width)|nbsp-mode|opacity|overflow-scrolling|padding-(after|before|end|start)|perspective(-(origin(-(x|y))?))?|print-color-adjust|region-(break-(after|before|inside)|overflow)|rtl-ordering|shape-(inside|outside)|svg-shadow|tap-highlight-color|text-(decorations-in-effect|emphasis-position|fill-color|security|size-adjust|stroke(-(color|width))?)|touch-callout|transform(-(origin|style))?|transition(-(delay|duration|property|timing-function))?)\s*(?=:)
+
+  pseudo-class:
+    # name: invalid.deprecated.css
+    # non-function pseudo-classes. pseudo-class functions like :not() have
+    # separate rules.
+    name: entity.name.class.css
+    match: :(((any|local)-)?link|visited|target|scope|current|past|future|(active|(in)?valid)-drop|active|hover|focus|(en|dis)abled|read-(only|write)|placeholder-shown|default|checked|indeterminate|(in)?valid|(in|out-of)-range|required|optional|root|empty|blank|(first|last|only)-(child|of-type)|fullscreen)
+
+  pseudo-class-moz:
+    # name: invalid.deprecated.css
+    name: entity.name.class.css
+    match: :-moz-(any(-link)?|bound-element|broken|drag-over|first-node|focusring|full-screen(-ancestor)?|handler-(blocked|crashed|disabled)|last-node|list-(bullet|number)|loading|lwtheme(-(brighttext|darktext))?|only-whitespace|placeholder|read-(only|write)|suppressed|submit-invalid|tree-(checkbox|cell(-text)?|column|drop-feedback|image|indentation|line|progressmeter|row|separator|twisty)|ui-(in)?valid|user-disabled|window-inactive)
+
+  pseudo-class-ms:
+    # name: invalid.deprecated.css
+    name: entity.name.class.css
+    match: :-ms-(input-placeholder|keyboard-active)
+
+  pseudo-class-function-dir:
+    # name: invalid.deprecated.css
+    match: (:dir)\(\s*((ltr|rtl))\s*\)
+    captures:
+      '1': {name: entity.name.function.css}
+      '2': {name: variable.parameter.css}
+
+  pseudo-class-function-lang:
+    # name: invalid.deprecated.css
+    # deviation from spec: entire pseudo-class must be on the same line
+    match: (:lang)\(.*\)
+    captures:
+      '1': {name: entity.name.function.css}
+
+  pseudo-class-function-nth:
+    # name: invalid.deprecated.css
+    # deviation from spec: no space permitted between function name and opening
+    begin: (:nth-(last-)?(column|child|of-type|match))\(
+    beginCaptures:
+      '1': {name: entity.name.function.css}
+    patterns:
+    # the nth-match and nth-last-match functions take selector lists as arguments.
+    # that's why there's so many rules here. otherwise, only #an-plus-b would be
+    # necessary.
+    - include: '#block-comment'
+    - include: '#attribute-selector'
+    - include: '#pseudo-element-webkit'
+    - include: '#pseudo-element-moz'
+    - include: '#pseudo-element'
+    - include: '#deprecated-pseudo-element'
+    - include: '#pseudo-class-function-moz-locale-dir'
+    - include: '#pseudo-class-function-moz-sytem-metric'
+    - include: '#pseudo-class-function-moz-tree'
+    - include: '#pseudo-class-function-nth'
+    - include: '#pseudo-class-function-selector-list'
+    - include: '#pseudo-class-function-local-link'
+    - include: '#pseudo-class-function-dir'
+    - include: '#pseudo-class-function-lang'
+    - include: '#pseudo-class-moz'
+    - include: '#pseudo-class-ms'
+    - include: '#pseudo-class'
+    - include: '#html-id'
+    - include: '#html-class'
+    - include: '#deprecated-html-tag'
+    - include: '#html-tag'
+    - include: '#an-plus-b'
+    - include: '#combinator'
+    end: \)
+
+  pseudo-class-function-selector-list:
+    # name: invalid.deprecated.css
+    # a pseudo-class function that takes a selector list as an argument. these
+    # functions require no special styling since their arguments are already
+    # styled by #selector
+    # deviation from spec: no space permitted between function name and opening
+    # paren
+    match: (:(current|not|matches))\(
+    captures:
+      '1': {name: entity.name.function.css}
+
+  pseudo-class-function-local-link:
+    # name: invalid.deprecated.css
+    # deviation from spec: no space permitted between function name and opening
+    # paren. also, the pseudo-class and arguments must be on the same line.
+    match: (:local-link)\(\s*((?<!-)[0-9]+)\s*\)
+    captures:
+      '1': {name: entity.name.function.css}
+      '2': {name: constant.numeric.css}
+
+  pseudo-class-function-moz-locale-dir:
+    # name: invalid.deprecated.css
+    match: (:-moz-locale-dir)\(\s*((ltr|rtl))\s*\)
+    captures:
+      '1': {name: entity.name.function.css}
+      '2': {name: variable.parameter.css}
+
+  pseudo-class-function-moz-sytem-metric:
+    # name: invalid.deprecated.css
+    match: (:-moz-system-metric)\(\s*((images-in-menus|mac-graphite-theme|scrollbar-(end|start)-(backward|forward)|scrollbar-thumb-proportional|touch-enabled|windows-default-theme))\s*\)
+    captures:
+      '1': {name: entity.name.function.css}
+      '2': {name: variable.parameter.css}
+
+  pseudo-class-function-moz-tree:
+    # name: invalid.deprecated.css
+    match: (:-moz-tree-(cell-text|row))\(\s*(hover)\s*\)
+    captures:
+      '1': {name: entity.name.function.css}
+      '3': {name: variable.parameter.css}
+
+  pseudo-element:
+    # name: invalid.deprecated.css
+    name: entity.name.class.css
+    # TODO: delete moz, webkit, ms prefixes when they're supported by other rules
+    match: ::(-(epub|ms|wap|webkit)-)?(after|before|choices|first-(letter|line)|repeat-(index|item)|selection|value)
+
+  pseudo-element-moz:
+    # name: invalid.deprecated.css
+    name: entity.name.class.css
+    match: ::-moz-(anonymous-(positioned-)?block|canvas|cell-content|focus-(inner|outer)|inline-table|math-stretchy|page(-sequence|break|content)?|placeholder|progress-bar|range-(thumb|track)|selection|scrolled-(canvas|content|page-sequence)|svg-foreign-content|table(-(cell|(column|row)(-group)?|outer))?|viewport(-scroll)?|xul-anonymous-block)
+
+  pseudo-element-webkit:
+    # name: invalid.deprecated.css
+    name: entity.name.class.css
+    match: ::-webkit-(calendar-picker-indicator|color-swatch(-wrapper)?|details-marker|file-upload-button|image-inner-element|(inner|outer)-spin-button|input-(placeholder|speech-button)|keygen-select|media-(controls-(panel|timeline-container)|slider-container)|meter-(bar|(even-less-good|optimum|suboptimal)-value)|progress-(bar|value)|resizer|scrollbar(-(button|corner|thumb|track(-piece)?))?|search-((cancel|results)-button|(results-)?decoration)|slider-(container|runnable-track|thumb)|textfield-decoration-container|validation-bubble(-(arrow(-clipper)?|heading|message|text-block))?)
+
+  pseudo-page:
+    # name: invalid.deprecated.css
+    name: entity.name.class.css
+    match: :(blank|first|left|right)
+
+  ratio:
+    # name: invalid.deprecated.css
+    match: ((?<!-)[0-9]+)\s*/\s*((?<!-)[0-9]+)
+    captures:
+      '1': {name: constant.numeric.css}
+      '2': {name: constant.numeric.css}
+
+  selector:
+    # name: invalid.deprecated.css
+    name: meta.selector.css
+    begin: (?=[!:.#*\p{L}\[-])
+    patterns:
+    - include: '#block-comment'
+    - include: '#attribute-selector'
+    - include: '#pseudo-element-webkit'
+    - include: '#pseudo-element-moz'
+    - include: '#pseudo-element'
+    - include: '#deprecated-pseudo-element'
+    - include: '#pseudo-class-function-moz-locale-dir'
+    - include: '#pseudo-class-function-moz-sytem-metric'
+    - include: '#pseudo-class-function-moz-tree'
+    - include: '#pseudo-class-function-nth'
+    - include: '#pseudo-class-function-selector-list'
+    - include: '#pseudo-class-function-local-link'
+    - include: '#pseudo-class-function-dir'
+    - include: '#pseudo-class-function-lang'
+    - include: '#pseudo-class-moz'
+    - include: '#pseudo-class-ms'
+    - include: '#pseudo-class'
+    - include: '#html-id'
+    - include: '#html-class'
+    - include: '#deprecated-html-tag'
+    - include: '#html-tag'
+    - include: '#combinator'
+    end: (?=\{|;)
+
+  single-quoted-string:
+    # name: invalid.deprecated.css
+    name: string.quoted.single.css
+    match: \'([^\n\r\f\\']|\\(\n|\r\n|\r|\f)|((\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)|\\[^\n\r\f0-9a-f]))*\'
+
+  supports-condition:
+    # name: invalid.deprecated.css
+    begin: \(
+    patterns:
+    - include: '#block-comment'
+    - include: '#supports-condition'
+    - include: '#property-epub'
+    - include: '#property-moz'
+    - include: '#property-ms'
+    - include: '#property-wap'
+    - include: '#property-webkit'
+    - include: '#property'
+    - include: '#supports-condition-value'
+    - include: '#logic-operator'
+    end: \)
+
+  supports-condition-value:
+    # name: invalid.deprecated.css
+    # this is identical to #value except that it ends just before a closing paren
+    begin: ':'
+    patterns:
+    - include: '#block-comment'
+    - include: '#double-quoted-string'
+    - include: '#single-quoted-string'
+    - include: '#url'
+    - include: '#function'
+    - include: '#unit'
+    - include: '#color-name'
+    - include: '#hex-color'
+    - include: '#named-value-moz-deprecated'
+    - include: '#named-value-moz'
+    - include: '#named-value'
+    - include: '#number'
+    - include: '#identifier'
+    end: (?=\))
+
+  supports-selector:
+    # name: invalid.deprecated.css
+    begin: (?<=@supports)
+    patterns:
+    - include: '#block-comment'
+    - include: '#supports-condition'
+    - include: '#logic-operator'
+    end: \{
+
+  unicode-range:
+    # name: invalid.deprecated.css
+    name: constant.numeric.css
+    match: \b[uU]\+[0-9a-fA-F\?]{1,6}(-[0-9a-fA-F\?]{1,6})?
+
+  unit:
+    # name: invalid.deprecated.css
+    match: ([-+]?([0-9]+|[0-9]*\.[0-9]+)([eE][-+]?[0-9]*)?)((r?em|ex|ch|v(h|w|min|max)|p(x|t|c)|(c|m|mozm)m|in|m?s|dp(cm|i|px)|deg|g?rad|turn|k?Hz|%))
+    captures:
+      '1': {name: constant.numeric.css}
+      '4': {name: keyword.unit.css}
+
+  url:
+    # name: invalid.deprecated.css
+    begin: (url)\(
+    beginCaptures:
+      '1': {name: entity.name.function.css}
+    patterns:
+    - include: '#block-comment'
+    - include: '#double-quoted-string'
+    - include: '#single-quoted-string'
+    - include: '#url-unquoted'
+    end: \)
+
+  url-unquoted:
+    # name: invalid.deprecated.css
+    name: string.unquoted.css
+    match: ([^\"\'\(\)\s\p{^Print}]|\\([^\n0-9a-fA-F]|[0-9a-fA-F]{1,6}\s))+
+
+  value:
+    # name: invalid.deprecated.css
+    begin: ':'
+    patterns:
+    - include: '#block-comment'
+    - include: '#double-quoted-string'
+    - include: '#single-quoted-string'
+    - include: '#url'
+    - include: '#function'
+    - include: '#unit'
+    - include: '#color-name'
+    - include: '#hex-color'
+    - include: '#named-value-moz-deprecated'
+    - include: '#named-value-moz'
+    - include: '#named-value'
+    - include: '#number'
+    - include: '#important'
+    - include: '#identifier'
+    end: ;
+
+  variable:
+    # name: invalid.deprecated.css
+    # this is the regex for an identifier, but with the var- prefix
+    match: (var-([a-zA-Z_\p{^ASCII}]|\\([0-9a-fA-F]{1,6}|[^\n]))([-a-zA-Z0-9_\p{^ASCII}]|\\([^\n]|[0-9a-fA-F]{1,6}))*)\s*(?=:)
+    captures:
+      '1': {name: storage.type.css}
+
+...

@@ -1,0 +1,1 @@
+{"description": "Ditch sidebar and browse your files in a normal tab with keyboard, like a pro!", "url": "https://github.com/aziz/SublimeFileBrowser", "platforms": ["*"], "version": "0.5.4", "sublime_text": "*", "dependencies": []}

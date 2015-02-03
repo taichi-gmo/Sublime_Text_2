@@ -1,0 +1,58 @@
+{
+  // If you don't like `..` symbol on the top of each view that moves you to
+  // the parent directory and want to hide it you can set this to false
+  "dired_show_parent": true,
+
+  // If you want to see header (underlined full path) on top of file list
+  "dired_header": false,
+
+  // If you want to see full path in tab title and thus in window title
+  // if tab is focused
+  "dired_show_full_path": false,
+
+  // If true 'Send to Trash' command will confirm the action with a dialog box
+  "dired_confirm_send2trash": true,
+
+  // Showing hidden files by default
+  "dired_show_hidden_files": true,
+
+  // Customize the patterns used to determine if a file should be hidden
+  // e.g. [".*", "__pycache__", "*.pyc"]
+  "dired_hidden_files_patterns": [".*"],
+
+  // (ST3 Only) shows a FileBrowser or a jump list view in new window by default
+  // false: hijacking is disabled
+  // "jump_list": shows the project jump list
+  // "dired"    : shows a normal FileBrower view defaults to user directory
+  "dired_hijack_new_window": false,
+
+  // Path to git executable.
+  // Wildcards are supported, e.g. if you use GitHub for Windows it would be:
+  //     "git_path": "~/Appdata/Local/GitHub/PortableGit_*/cmd/git.exe"
+  // To disable git integration set to empty string:
+  //     "git_path": ""
+  "git_path": "git",
+
+  // true: the default, pressing Enter on a directory uses the current view.
+  // false: a new view is created.
+  "dired_reuse_view": true,
+
+  // The rest of these settings are normal sublime settings to
+  // make FileBrowser views look more like a file browser than an editor
+  // This plugin does not change font and font size, but it's
+  // highly recommended to customize them in your user files.
+  "color_scheme": "Packages/FileBrowser/dired.hidden-tmTheme",
+  "line_numbers": false,
+  "word_wrap": false,
+  "spell_check": false,
+  "scroll_past_end": false,
+  "draw_indent_guides": false,
+  "fold_buttons": false,
+  "drag_text": false,
+  "highlight_line": true,
+  "margin": 0,
+  "tab_size": 3,
+  "rulers": []
+  // "font_face": "comic sans",
+  // "font_size": 13,
+}
