@@ -2,11 +2,6 @@
 	"in_process_packages":
 	[
 	],
-	"installed_dependencies":
-	[
-		"0_package_control_loader",
-		"bz2"
-	],
 	"installed_packages":
 	[
 		"All Autocomplete",
@@ -14,6 +9,7 @@
 		"Block Cursor Everywhere",
 		"Can I Use",
 		"CanISwitchToSublimeText3",
+		"Cheat Sheets",
 		"ConvertToUTF8",
 		"CSS3_Syntax",
 		"CSScomb",
