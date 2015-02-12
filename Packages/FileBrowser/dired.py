@@ -17,17 +17,19 @@ if ST3:
     from .common import RE_FILE, DiredBaseCommand
     from . import prompt
     from .show import show
+    from .show import set_proper_scheme
     from .jumping import jump_names
     MARK_OPTIONS = sublime.DRAW_NO_OUTLINE
     try:
         import Default.send2trash as send2trash
     except ImportError:
         send2trash = None
-else: # ST2 imports
+else:  # ST2 imports
     import locale
     from common import RE_FILE, DiredBaseCommand
     import prompt
     from show import show
+    from show import set_proper_scheme
     from jumping import jump_names
     MARK_OPTIONS = 0
     try:
@@ -35,6 +37,7 @@ else: # ST2 imports
     except ImportError:
         send2trash = None
 PARENT_SYM = u"⠤"
+
 
 def print(*args, **kwargs):
     """ Redefine print() function; the reason is the inconsistent treatment of
@@ -49,8 +52,10 @@ def print(*args, **kwargs):
     sep, end = kwargs.get('sep', ' '), kwargs.get('end', '\n')
     sys.stdout.write(sep.join(s for s in args) + end)
 
+
 def reuse_view():
     return sublime.load_settings('dired.sublime-settings').get('dired_reuse_view', False)
+
 
 def sort_nicely(l):
     """ Sort the given list in the way that humans expect.
@@ -66,21 +71,37 @@ def hijack_window():
     command = settings.get("dired_hijack_new_window")
     if command:
         if command == "jump_list":
-            sublime.set_timeout(lambda: sublime.windows()[-1].run_command("dired_jump_list") , 1)
+            sublime.set_timeout(lambda: sublime.windows()[-1].run_command("dired_jump_list"), 1)
         else:
-            sublime.set_timeout(lambda: sublime.windows()[-1].run_command("dired", { "immediate": True}) , 1)
+            sublime.set_timeout(lambda: sublime.windows()[-1].run_command("dired", {"immediate": True}), 1)
+
 
 def plugin_loaded():
     if len(sublime.windows()) == 1 and len(sublime.windows()[0].views()) == 0:
         hijack_window()
 
+    window = sublime.active_window()
     if not ST3:
-        return
-    for v in sublime.active_window().views():
+        global recursive_plugin_loaded
+        # recursion limit is 1000 generally, so it will try to refresh for 100*1000 ms (100 s)
+        # if no active_window in 100 s, then no refresh
+        # if view still loading, refresh fail because view cant be edited
+        if not window or any(view.is_loading() for view in window.views()):
+            recursive_plugin_loaded += 1
+            try:
+                return sublime.set_timeout(plugin_loaded, 100)
+            except RuntimeError:
+                print('\ndired.plugin_loaded run recursively %d time(s); and failed to refresh\n'%recursive_plugin_loaded)
+                return
+
+    for v in window.views():
         if v.settings() and v.settings().get("dired_path"):
             v.run_command("dired_refresh")
+    # if not ST3:
+    #     print('\ndired.plugin_loaded run recursively %d time(s); and call refresh command\n'%recursive_plugin_loaded)
 
 if not ST3:
+    recursive_plugin_loaded = 1
     plugin_loaded()
 
 
@@ -167,7 +188,9 @@ class DiredRefreshCommand(TextCommand, DiredBaseCommand):
 
     def continue_refreshing(self, edit, path, names, goto=None, indent=''):
         status = u" 𝌆 [?: Help] "
-        path_in_project = any(folder == self.path[:-1] for folder in self.view.window().folders())
+        # if view isnot focused, view.window() may be None
+        window = self.view.window() or sublime.active_window()
+        path_in_project = any(folder == self.path[:-1] for folder in window.folders())
         status += 'Project root, ' if path_in_project else ''
         show_hidden = self.view.settings().get('dired_show_hidden_files', True)
         status += 'Hidden: On' if show_hidden else 'Hidden: Off'
@@ -195,13 +218,17 @@ class DiredRefreshCommand(TextCommand, DiredBaseCommand):
         elif indent:
             self.view.insert(edit, self.view.line(self.view.sel()[0]).b, '\t<empty>')
         else:
-            header = self.view.settings().get('dired_header', False)
-            name = jump_names().get(path)
-            caption = u"{0} → {1}".format(name, path) if name else path
-            text = [ caption, len(caption)*(u'—') ] if header else []
+            header    = self.view.settings().get('dired_header', False)
+            name      = jump_names().get(path or self.path)
+            caption   = u"{0} → {1}".format(name, path) if name else path
+            text      = [ caption, len(caption)*(u'—') ] if header else []
+            view_name = self.view.name()[:2]
+            norm_path = path.rstrip(os.sep)
             if self.view.settings().get('dired_show_full_path', False):
-                view_name = self.view.name()[:2]
-                self.view.set_name(u'%s%s (%s)' % (view_name, name or basename(path), path))
+                title = u'%s%s (%s)' % (view_name, name or basename(norm_path), norm_path)
+            else:
+                title = u'%s%s' % (view_name, name or basename(norm_path))
+            self.view.set_name(title)
             if not f or self.show_parent():
                 text.append(PARENT_SYM)
             text.extend(f)
@@ -847,6 +874,7 @@ class DiredRenameCommitCommand(TextCommand, DiredBaseCommand):
 class DiredHelpCommand(TextCommand):
     def run(self, edit):
         view = self.view.window().new_file()
+        view.settings().add_on_change('color_scheme', lambda: set_proper_scheme(view))
         view.set_name("Browse: shortcuts")
         view.set_scratch(True)
         view.settings().set('color_scheme','Packages/FileBrowser/dired.hidden-tmTheme')
@@ -857,8 +885,11 @@ class DiredHelpCommand(TextCommand):
 
 class DiredShowHelpCommand(TextCommand):
     def run(self, edit):
-        shortcuts = join(dirname(__file__), "shortcuts.md")
-        COMMANDS_HELP = open(shortcuts, "r").read()
+        COMMANDS_HELP = sublime.load_resource('Packages/FileBrowser/shortcuts.md') if ST3 else ''
+        if not COMMANDS_HELP:
+            dest = dirname(__file__)
+            shortcuts = join(dest if dest!='.' else join(sublime.packages_path(), 'FileBrowser'), "shortcuts.md")
+            COMMANDS_HELP = open(shortcuts, "r").read()
         self.view.erase(edit, Region(0, self.view.size()))
         self.view.insert(edit, 0, COMMANDS_HELP)
         self.view.sel().clear()
@@ -1047,4 +1078,3 @@ class DiredMoveOpenOrNewFileToRightGroup(EventListener):
 
     def on_load(self, view):
         self.on_new(view)
-
