@@ -36,6 +36,7 @@
   {
       "keys": ["o"],
       "command": "dired_select",
+      "args": { "inline": true, "toggle": true },
       "context": [
         { "key": "selector", "operator": "equal", "operand": "text.dired" },
         { "key": "setting.dired_rename_mode", "operand": false }
@@ -46,20 +47,29 @@
       "command": "dired_select",
       "args": { "inline": true },
       "context": [
-        { "key": "selector", "operator": "equal", "operand": "text.dired dired.item.directory" },
+        { "key": "selector", "operator": "equal", "operand": "text.dired" },
         { "key": "setting.dired_rename_mode", "operand": false }
       ]
   },
-  { // Disable right key on files
-      "keys": ["right"],
-      "command": "dired_noop",
+  {
+      "keys": ["l"],
+      "command": "dired_select",
+      "args": { "inline": true },
       "context": [
-        { "key": "selector", "operator": "equal", "operand": "text.dired dired.item.file" },
+        { "key": "selector", "operator": "equal", "operand": "text.dired" },
         { "key": "setting.dired_rename_mode", "operand": false }
       ]
   },
   {
       "keys": ["left"],
+      "command": "dired_fold",
+      "context": [
+        { "key": "selector", "operator": "equal", "operand": "text.dired" },
+        { "key": "setting.dired_rename_mode", "operand": false }
+      ]
+  },
+  {
+      "keys": ["h"],
       "command": "dired_fold",
       "context": [
         { "key": "selector", "operator": "equal", "operand": "text.dired" },
@@ -146,7 +156,7 @@
       ]
   },
   {
-      "keys": ["D"],
+      "keys": ["alt+shift+d"],
       "command": "dired_delete",
       "context": [
         { "key": "selector", "operator": "equal", "operand": "text.dired" },
@@ -154,7 +164,7 @@
       ]
   },
   {
-      "keys": ["S"],
+      "keys": ["D"],
       "command": "dired_delete", "args": {"trash": true},
       "context": [
         { "key": "selector", "operator": "equal", "operand": "text.dired" },
@@ -187,6 +197,72 @@
   //       { "key": "setting.dired_rename_mode", "operand": false }
   //   ]
   // },
+  {
+    "keys": ["ctrl+c"],
+    "command": "dired_copy_files",
+    "context": [
+        { "key": "selector", "operator": "equal", "operand": "text.dired" },
+        { "key": "setting.dired_rename_mode", "operand": false }
+    ]
+  },
+  {
+    "keys": ["super+c"],
+    "command": "dired_copy_files",
+    "context": [
+        { "key": "selector", "operator": "equal", "operand": "text.dired" },
+        { "key": "setting.dired_rename_mode", "operand": false }
+    ]
+  },
+  {
+    "keys": ["ctrl+x"],
+    "command": "dired_copy_files",
+    "args":{"cut": true},
+    "context": [
+        { "key": "selector", "operator": "equal", "operand": "text.dired" },
+        { "key": "setting.dired_rename_mode", "operand": false }
+    ]
+  },
+  {
+    "keys": ["super+x"],
+    "command": "dired_copy_files",
+    "args":{"cut": true},
+    "context": [
+        { "key": "selector", "operator": "equal", "operand": "text.dired" },
+        { "key": "setting.dired_rename_mode", "operand": false }
+    ]
+  },
+  {
+    "keys": ["ctrl+v"],
+    "command": "dired_paste_files",
+    "context": [
+        { "key": "selector", "operator": "equal", "operand": "text.dired" },
+        { "key": "setting.dired_rename_mode", "operand": false }
+    ]
+  },
+  {
+    "keys": ["super+v"],
+    "command": "dired_paste_files",
+    "context": [
+        { "key": "selector", "operator": "equal", "operand": "text.dired" },
+        { "key": "setting.dired_rename_mode", "operand": false }
+    ]
+  },
+  {
+    "keys": ["ctrl+z"],
+    "command": "dired_clear_copy_cut_list",
+    "context": [
+        { "key": "selector", "operator": "equal", "operand": "text.dired" },
+        { "key": "setting.dired_rename_mode", "operand": false }
+    ]
+  },
+  {
+    "keys": ["super+z"],
+    "command": "dired_clear_copy_cut_list",
+    "context": [
+        { "key": "selector", "operator": "equal", "operand": "text.dired" },
+        { "key": "setting.dired_rename_mode", "operand": false }
+    ]
+  },
   {
       "keys": ["*"],
       "command": "dired_mark_extension",
@@ -251,7 +327,7 @@
     ]
   },
   {
-    "keys": ["w"],
+    "keys": ["W"],
     "command": "dired_open_in_new_window",
     "context": [
         { "key": "selector", "operator": "equal", "operand": "text.dired" },
@@ -283,7 +359,7 @@
     ]
   },
   {
-    "keys": ["h"],
+    "keys": ["H"],
     "command": "dired_toggle_hidden_files",
     "context": [
         { "key": "selector", "operator": "equal", "operand": "text.dired" },

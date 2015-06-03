@@ -1,6 +1,7 @@
 import sublime
 import sublime_plugin
 import os
+from threading import Timer
 
 class BlockCursorEverywhere(sublime_plugin.EventListener):
     def show_block_cursor(self, view):
@@ -25,12 +26,9 @@ class BlockCursorEverywhere(sublime_plugin.EventListener):
 
     def on_selection_modified(self, view):
         is_widget = view.settings().get('is_widget')
-        vintage = self.is_enabled(view, 'Vintage')
-        vintageous = self.is_vintageous_installed() and self.is_enabled(view, 'Vintageous')
-        vi_enabled = vintage or vintageous
         command_mode = view.settings().get('command_mode')
 
-        if is_widget or not vi_enabled or (vi_enabled and not(command_mode)):
+        if is_widget or not self.vi_enabled or (self.vi_enabled and not(command_mode)):
             view.erase_regions('BlockCursorListener')
             return
 
@@ -42,9 +40,18 @@ class BlockCursorEverywhere(sublime_plugin.EventListener):
         self.current_view = None
 
     def on_activated(self, view):
+        self.current_view = view
+        self.timer = Timer(0, lambda: none)
+
+        self.vintage_enabled = self.is_enabled(view, 'Vintage')
+        self.vintageous_enabled = self.is_vintageous_installed() and self.is_enabled(view, 'Vintageous')
+        self.vi_enabled = self.vintage_enabled or self.vintageous_enabled
+
         self.on_selection_modified(view)
         view.settings().add_on_change('command_mode', self.on_command_mode_change)
-        self.current_view = view
 
     def on_command_mode_change(self):
-        self.on_selection_modified(self.current_view)
+        # Debounce to prevent recursion and plugin crash https://github.com/karlhorky/BlockCursorEverywhere/issues/11
+        self.timer.cancel()
+        self.timer = Timer(0.0005, self.on_selection_modified, [self.current_view])
+        self.timer.start()

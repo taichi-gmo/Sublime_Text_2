@@ -1,0 +1,1 @@
+{"description": "Autocomplete relative or absolute file paths in Sublime Text project folder ", "url": "https://github.com/sagold/FuzzyFilePath", "platforms": ["*"], "version": "2014.11.24.13.10.08", "sublime_text": "<3000", "dependencies": []}

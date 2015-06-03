@@ -40,13 +40,21 @@ def jump_names():
 
 class DiredJumpCommand(TextCommand, DiredBaseCommand):
     def run(self, edit, new_window=False):
-        if not jump_points():
+        jp = jump_points()
+        if not jp:
             status_message("No jump points available. To create jump point for this directory use 'P'.")
             return
         # show_quick_panel didn't work with dict_items
         self.new_window = new_window
-        self.jump_points = [[n, t] for n, t in jump_points()]
-        self.display_jump_points = [[n if ST3 else n.decode('utf8'), self.display_path(t)] for n, t in jump_points()]
+        self.jump_points = [[n, t] for n, t in jp]
+        self.display_jump_points = []
+        longest_name = max([len(n) for n in jump_names().values()])
+        for n, t in jp:
+            n = n if ST3 else n.decode('utf8')
+            offset = ' ' * (longest_name - len(n) + 1)
+            path = self.display_path(t)
+            name = u'%s%s%s' % (n, offset, path.rstrip(os.sep))
+            self.display_jump_points.append(name)
         self.view.window().show_quick_panel(self.display_jump_points, self.on_pick_point, sublime.MONOSPACE_FONT)
 
     def display_path(self, folder):
@@ -142,7 +150,7 @@ class DiredJumpListRenderCommand(TextCommand):
             self.max_len_names = max([len(n if ST3 else n.decode('utf8')) for n, _ in jump_points()])
             self.view.settings().set('dired_project_count', len(self.names))
         else:
-            content += "Jump list is empty!\n\nAdd a folder to your jump list by pressing P (shift + p)\nwhile you are browing that folder in FileBrowser"
+            content += "Jump list is empty!\n\nAdd a folder to your jump list by pressing P (shift + p)\nwhile you are browsing that folder in FileBrowser"
 
         for p in self.jump_points:
             content += u'★ {0}→{1}\n'.format(self.display_name(p[0]), self.display_path(p[1]))
@@ -153,13 +161,11 @@ class DiredJumpListRenderCommand(TextCommand):
         return name + " " * (self.max_len_names - len(name) + self.col_padding)
 
     def display_path(self, folder):
-        display = folder
+        display = folder.rstrip(os.sep)
         home = os.path.expanduser("~")
         label_characters = self.view_width - 4 - (self.col_padding*2) - self.max_len_names
         if folder.startswith(home):
             display = folder.replace(home, "~", 1)
-        if folder.endswith("/") or folder.endswith("\\"):
-            display = display[:-1]
         if len(display) > label_characters:
             chars = int(label_characters/2)
             display = display[:chars] + u"…" + display[-chars:]

@@ -1,1 +1,1 @@
-{"url": "https://github.com/billymoon/LoremIpsum", "version": "2014.04.01.22.10.10", "description": "LoremIpsum plugin for Sublime Editor 2"}
+{"description": "LoremIpsum plugin for Sublime Editor 2", "url": "https://github.com/billymoon/LoremIpsum", "platforms": ["*"], "version": "2015.03.30.01.22.08", "sublime_text": "*", "dependencies": []}
